@@ -3,6 +3,17 @@ Docker Yumsync CHANGELOG
 
 The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
 
+v0.1.3 (2016-01-21)
+-------------------
+
+### Bugfix
+
+* Do not overwrite archive file if it already exists
+
+| Yumsync |
+| :-----: |
+| [v0.1.1](https://github.com/jrwesolo/yumsync/tree/v0.1.1) |
+
 v0.1.2 (2016-01-21)
 -------------------
 

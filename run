@@ -60,8 +60,7 @@ function archive {
   dest="${archive_dir}/yumsync_${timestamp}.tar"
 
   if [[ -d $archive_dir ]]; then
-    #if [[ ! -f $dest ]]; then
-    if true; then
+    if [[ ! -f $dest ]]; then
       echo -n "Calculating size of ${YUMSYNC_DATA}..."
       src_size="$(du -sb "${YUMSYNC_DATA}" | awk '{print $1}')"
       echo "$(numfmt --to=iec-i --round=up --suffix=B "${src_size}")"
