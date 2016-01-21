@@ -42,6 +42,11 @@ function sync {
     : # error handling will be handle by yumsync proper
   fi
 
+  # disable ovl to prevent permission denied error
+  if [[ -f /etc/yum/pluginconf.d/ovl.conf ]]; then
+    sed -ri 's|(enabled)=1|\1=0|' /etc/yum/pluginconf.d/ovl.conf
+  fi
+
   # now to the fun stuff
   exec gosu "${USER_ID}":"${GROUP_ID}" /usr/bin/yumsync \
     --directory "${YUMSYNC_DATA}" \
