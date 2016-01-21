@@ -90,20 +90,58 @@ docker run --rm \
 
 Now the fresh data-only container will have the restored data and can be used for future syncs.
 
-Serve with Nginx
-----------------
+Full Example with Nginx
+-----------------------
 
-All of the data generated can now be served up with any webserver. Nginx will be used for this example. First, the `nginx.conf` file will need to be created:
+#### Create Data-Only Container
+
+The first thing needed is a data-only container that will house the persistent data:
+
+```bash
+docker create --name yumsync_data jrwesolo/yumsync:latest
+```
+
+#### Create Yumsync Configuration
+
+Yumsync needs `repos.yml` file available to configure which repositories are to be mirrored. Create `$PWD/repos.yml` with the following content:
+
+```yaml
+---
+centos/6/extras/x86_64:
+  mirrorlist: 'http://mirrorlist.centos.org/?release=6&repo=extras&arch=x86_64'
+  gpgkey: 'http://mirror.centos.org/centos/6/os/x86_64/RPM-GPG-KEY-CentOS-6'
+```
+
+#### First Synchronization
+
+Now it's time to do the first sync using the previously created data-only container and config file:
+
+```bash
+docker run --rm \
+  --volumes-from yumsync_data \
+  -v $PWD/repos.yml:/etc/yumsync/repos.yml:ro \
+  jrwesolo/yumsync:latest
+```
+
+#### Create Nginx Configuration
+
+All of the data generated can now be served up with any webserver. Nginx will be used for this example. Create `$PWD/nginx.conf` with the following content:
 
 ```
-# $PWD/nginx.conf, this can be optimized to your needs
+# this can be optimized to your needs
+user nginx;
+worker_processes auto;
+
+events { worker_connections 1024; }
+
 http {
   sendfile on;
   tcp_nopush on;
   tcp_nodelay on;
   include /etc/nginx/mime.types;
   default_type application/octet-stream;
-  
+  types { text/plain log; }
+
   server {
     listen 80 default_server;
     root /data/public;
@@ -113,8 +151,24 @@ http {
 }
 ```
 
-Next, the Nginx container can be run with the mounted `nginx.conf` and volumes from `yumsync_data`:
+#### Serve It Up!
+
+All the pieces are in place now. The Nginx container can be ran with the Nginx config file and data-only container volumes mounted:
 
 ```bash
-docker run --rm --volumes-from yumsync_data -v $PWD:/etc/nginx/nginx.conf:ro -p 80:80 nginx:1.9
+docker run --rm \
+  --volumes-from yumsync_data \
+  -v $PWD/nginx.conf:/etc/nginx/nginx.conf:ro \
+  -p 80:80 \
+  nginx:1.9
 ```
+
+If you are using another machine or VM as your docker host, you will need to use that ip address to access Nginx. Otherwise, use `127.0.0.1`. Determine what ip address Nginx will be accessible at using the following:
+
+```bash
+[[ $DOCKER_HOST ]] \
+&& sed 's|^.*://\(.*\):.*|\1|' <<< "${DOCKER_HOST}" \
+|| echo 127.0.0.1
+```
+
+Now you can navigate to `http://${ip}` and see all of the synchronized data available in a friendly and organized fashion.
