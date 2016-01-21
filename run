@@ -39,7 +39,7 @@ function sync {
       chmod 0400 "${config_file}"
     fi
   else
-    pass # error handling will be handle by yumsync proper
+    : # error handling will be handle by yumsync proper
   fi
 
   # now to the fun stuff
