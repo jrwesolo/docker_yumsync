@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+
+script_name="${0##*/}"
+archive_dir='/archive'
+restore_file='/restore'
+config_file="${YUMSYNC_CONF}/repos.yml"
+
+# we only want to allow root to execute this
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root (ran as $EUID)" >&2
+  exit 1
+fi
+
+function setup {
+  # fix UID of yumsync user
+  if [[ $USER_ID != $YUMSYNC_UID ]]; then
+    usermod -u "${USER_ID}" "${YUMSYNC_USER}"
+  fi
+
+  # fix GID of yumsync group
+  if [[ $GROUP_ID != $YUMSYNC_GID ]]; then
+    groupmod -g "${GROUP_ID}" "${YUMSYNC_GROUP}"
+  fi
+
+  # fix permissions for yumsync data
+  find "${YUMSYNC_DATA}" \
+    \( -not -user "${USER_ID}" -o -not -group "${GROUP_ID}" \) -print0 |\
+    xargs -0rI {} chown -h "${USER_ID}":"${GROUP_ID}" {}
+}
+
+function sync {
+  if [[ -f $config_file ]]; then
+    gosu "${USER_ID}":"${GROUP_ID}" bash -c "[[ -r $config_file ]]"
+    # handle read-only mounts
+    if [[ $? != 0 ]]; then
+      cp "${config_file}" '/tmp/repos.yml'
+      config_file='/tmp/repos.yml'
+      chown "${USER_ID}":"${GROUP_ID}" "${config_file}"
+      chmod 0400 "${config_file}"
+    fi
+  else
+    pass # error handling will be handle by yumsync proper
+  fi
+
+  # now to the fun stuff
+  exec gosu "${USER_ID}":"${GROUP_ID}" /usr/bin/yumsync \
+    --directory "${YUMSYNC_DATA}" \
+    --config "${config_file}" \
+    "$@"
+}
+
+function archive {
+  local dest timestamp src_size dest_size
+  timestamp="$(date +"%Y%m%d")"
+  dest="${archive_dir}/yumsync_${timestamp}.tar"
+
+  if [[ -d $archive_dir ]]; then
+    #if [[ ! -f $dest ]]; then
+    if true; then
+      echo -n "Calculating size of ${YUMSYNC_DATA}..."
+      src_size="$(du -sb "${YUMSYNC_DATA}" | awk '{print $1}')"
+      echo "$(numfmt --to=iec-i --round=up --suffix=B "${src_size}")"
+      (tar -cpf - -C "${YUMSYNC_DATA}" . \
+      | pv -nt -i 5 -s "${src_size}" > "${dest}") 2>&1 \
+      | awk '$1 ~ /^[0-9]+/ && $2 ~ /^[0-9]+/ {
+               timestamp = strftime("%T%z");
+               percent = int($2)"%";
+               duration = int($1)"s";
+               print timestamp " " percent " archived in " duration;
+               fflush(stdout);
+             }'
+      dest_size="$(stat -c '%s' "${dest}")"
+      echo "$(numfmt --to=iec-i --round=up --suffix=B "${dest_size}") ${dest}"
+    else
+      echo "archive file already exists: $dest" >&2
+      exit 2
+    fi
+  else
+    echo "archive directory missing: $archive_dir" >&2
+    exit 2
+  fi
+}
+
+function restore {
+  local src_size dest_size
+  if [[ -f $restore_file ]]; then
+    if [[ ! "$(ls -A "${YUMSYNC_DATA}")" ]]; then
+      echo -n "Calculating size of ${restore_file}..."
+      src_size="$(stat -c '%s' "${restore_file}")"
+      echo "$(numfmt --to=iec-i --round=up --suffix=B "${src_size}")"
+      (pv -nt -i 5 -s "${src_size}" "${restore_file}" \
+      | tar -xf - -C "${YUMSYNC_DATA}") 2>&1 \
+      | awk '$1 ~ /^[0-9]+/ && $2 ~ /^[0-9]+/ {
+               timestamp = strftime("%T%z");
+               percent = int($2)"%";
+               duration = int($1)"s";
+               print timestamp " " percent " restored in " duration;
+               fflush(stdout);
+             }'
+      dest_size="$(du -sb "${YUMSYNC_DATA}" | awk '{print $1}')"
+      echo "$(numfmt --to=iec-i --round=up --suffix=B "${dest_size}") ${YUMSYNC_DATA}"
+    else
+      echo "${YUMSYNC_DATA} directory is not empty, will not perform restore!"
+      exit 4
+    fi
+  else
+    echo "Restore file missing: ${restore_file}" >&2
+    exit 3
+  fi
+}
+
+function usage {
+  cat >&2 <<EOF
+Usage: ${script_name} [MODE]
+
+Modes (choose one):
+    sync      default, sync yum repos from repos.yml
+    archive   perform archive of yum repos to tar file
+    restore   restore archive from tar file
+
+Sync:
+
+This is the default mode. If none is passed,
+sync will be assumed. Restoring requires that
+a $config_file file exists. Please be sure to
+mount this file when starting your docker
+container.
+
+Archive:
+
+Archiving requires a directory at $archive_dir.
+Please be sure to mount this directory when
+starting your docker container.
+
+Restore:
+
+Restoring from an archive requires that a
+$restore_file file exists. It also requires
+that $YUMSYNC_DATA directory is empty. Please
+be sure to mount this file when starting
+your docker container.
+EOF
+  exit 1
+}
+
+# allow user to override UID and GID
+: ${USER_ID:=$YUMSYNC_UID}
+: ${GROUP_ID:=$YUMSYNC_GID}
+
+if [[ $1 ]]; then
+  case $1 in
+    archive|restore|sync) mode="${1}"
+    shift
+    ;;
+    help) usage ;;
+  esac
+fi
+
+: ${mode:='sync'}
+
+setup
+$mode "$@"
