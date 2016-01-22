@@ -3,6 +3,21 @@ Docker Yumsync CHANGELOG
 
 The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
 
+v0.2.0 (2016-01-21)
+-------------------
+
+### Feature
+
+* Restore and archive now show better time and percentage estimates
+
+### Bugfix
+
+* Bumped Yumsync to version v0.1.2, this fixes combined metadata generation
+
+| Yumsync |
+| :-----: |
+| [v0.1.2](https://github.com/jrwesolo/yumsync/tree/v0.1.2) |
+
 v0.1.3 (2016-01-21)
 -------------------
 

@@ -19,7 +19,7 @@ RUN yum install -y epel-release && \
 RUN yum install -y pv && \
     yum clean all
 
-ENV YUMSYNC_VERSION=0.1.1
+ENV YUMSYNC_VERSION=0.1.2
 RUN curl -sSL "https://github.com/jrwesolo/yumsync/archive/v${YUMSYNC_VERSION}.tar.gz" | \
     tar -C /usr/local/src -xz && \
     cd "/usr/local/src/yumsync-${YUMSYNC_VERSION}" && \
@@ -38,7 +38,7 @@ RUN groupadd -g $YUMSYNC_GID $YUMSYNC_GROUP && \
     chown $YUMSYNC_USER:$YUMSYNC_GROUP $YUMSYNC_DATA $YUMSYNC_CONF && \
     chmod 0755 $YUMSYNC_DATA $YUMSYNC_CONF
 
-COPY run /docker/run
+COPY docker /docker
 
 VOLUME $YUMSYNC_DATA
 ENTRYPOINT ["/docker/run"]

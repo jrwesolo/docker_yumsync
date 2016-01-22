@@ -65,14 +65,8 @@ function archive {
       src_size="$(du -sb "${YUMSYNC_DATA}" | awk '{print $1}')"
       echo "$(numfmt --to=iec-i --round=up --suffix=B "${src_size}")"
       (tar -cpf - -C "${YUMSYNC_DATA}" . \
-      | pv -nt -i 5 -s "${src_size}" > "${dest}") 2>&1 \
-      | awk '$1 ~ /^[0-9]+/ && $2 ~ /^[0-9]+/ {
-               timestamp = strftime("%T%z");
-               percent = int($2)"%";
-               duration = int($1)"s";
-               print timestamp " " percent " archived in " duration;
-               fflush(stdout);
-             }'
+      | pv -nt -i 5 -b -s "${src_size}" > "${dest}") 2>&1 \
+      | awk -v total="${src_size}" -f /docker/progress
       dest_size="$(stat -c '%s' "${dest}")"
       echo "$(numfmt --to=iec-i --round=up --suffix=B "${dest_size}") ${dest}"
     else
@@ -92,15 +86,9 @@ function restore {
       echo -n "Calculating size of ${restore_file}..."
       src_size="$(stat -c '%s' "${restore_file}")"
       echo "$(numfmt --to=iec-i --round=up --suffix=B "${src_size}")"
-      (pv -nt -i 5 -s "${src_size}" "${restore_file}" \
+      (pv -nt -i 5 -b -s "${src_size}" "${restore_file}" \
       | tar -xf - -C "${YUMSYNC_DATA}") 2>&1 \
-      | awk '$1 ~ /^[0-9]+/ && $2 ~ /^[0-9]+/ {
-               timestamp = strftime("%T%z");
-               percent = int($2)"%";
-               duration = int($1)"s";
-               print timestamp " " percent " restored in " duration;
-               fflush(stdout);
-             }'
+      | awk -v total="${src_size}" -f /docker/progress
       dest_size="$(du -sb "${YUMSYNC_DATA}" | awk '{print $1}')"
       echo "$(numfmt --to=iec-i --round=up --suffix=B "${dest_size}") ${YUMSYNC_DATA}"
     else
