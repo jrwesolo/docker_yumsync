@@ -19,12 +19,11 @@ RUN yum install -y epel-release && \
 RUN yum install -y pv && \
     yum clean all
 
-ENV YUMSYNC_VERSION=0.1.3
+ENV YUMSYNC_VERSION=0.1.4
 RUN curl -sSL "https://github.com/jrwesolo/yumsync/archive/v${YUMSYNC_VERSION}.tar.gz" | \
     tar -C /usr/local/src -xz && \
     cd "/usr/local/src/yumsync-${YUMSYNC_VERSION}" && \
     python setup.py install && \
-    pip install blessings && \
     rm -rf "/usr/local/src/yumsync-${YUMSYNC_VERSION}"
 
 ENV YUMSYNC_CONF=/etc/yumsync \
