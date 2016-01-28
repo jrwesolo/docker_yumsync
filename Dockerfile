@@ -19,7 +19,7 @@ RUN yum install -y epel-release && \
 RUN yum install -y pv && \
     yum clean all
 
-ENV YUMSYNC_VERSION=0.2.0
+ENV YUMSYNC_VERSION=0.2.1
 RUN curl -sSL "https://github.com/jrwesolo/yumsync/archive/v${YUMSYNC_VERSION}.tar.gz" | \
     tar -C /usr/local/src -xz && \
     cd "/usr/local/src/yumsync-${YUMSYNC_VERSION}" && \
