@@ -28,6 +28,7 @@ There are three modes that this container can run in:
 - sync (default if none specified)
 - archive
 - restore
+- repair
 
 If the first parameter is any of the above, yumsync will switch into that mode. All other parameters are passed through. This allows flags to be passed to the actual yumsync script when running the docker container.
 
@@ -89,6 +90,11 @@ docker run --rm \
 ```
 
 Now the fresh data-only container will have the restored data and can be used for future syncs.
+
+Repair
+------
+
+The repair mode will fix any permission issues with the yumsync data. This repair automatically happens if the yumsync data directory has incorrect permissions when running in other modes. The contents of the yumsync data directory are not considered in the automatic check for performance reasons. If it is suspected that the permissions of the yumsync data are incorrect, run this mode to force a check.
 
 Full Example with Nginx
 -----------------------

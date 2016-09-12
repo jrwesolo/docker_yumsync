@@ -3,6 +3,14 @@ Docker Yumsync CHANGELOG
 
 The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
 
+v0.4.1 (2016-09-12)
+-------------------
+
+* Fix unnecessary slowness when starting container with a large data volume
+* Split permissions fix into its own function and expose as mode
+* Pin CentOS base image to centos:7.2.1511
+* Bump gosu version to v1.9
+
 v0.4.0 (2016-01-29)
 -------------------
 

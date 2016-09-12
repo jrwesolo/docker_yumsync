@@ -1,8 +1,8 @@
-FROM centos:7
+FROM centos:7.2.1511
 MAINTAINER Jordan Wesolowski <jrwesolo@gmail.com>
 
 # gosu install
-ENV GOSU_VERSION 1.7
+ENV GOSU_VERSION 1.9
 RUN curl -o /usr/local/bin/gosu -sSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64 && \
     curl -o /usr/local/bin/gosu.asc -sSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc && \
     gpg -q --keyserver pgp.mit.edu --recv-keys BF357DD4 && \
