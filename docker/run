@@ -21,11 +21,17 @@ function setup {
   if [[ $GROUP_ID != $YUMSYNC_GID ]]; then
     groupmod -g "${GROUP_ID}" "${YUMSYNC_GROUP}"
   fi
+}
 
-  # fix permissions for yumsync data
-  find "${YUMSYNC_DATA}" \
-    \( -not -user "${USER_ID}" -o -not -group "${GROUP_ID}" \) -print0 |\
-    xargs -0rI {} chown -h "${USER_ID}":"${GROUP_ID}" {}
+function repair {
+  # repair permissions
+  current_perms="$(stat -c '%u:%g' ${YUMSYNC_DATA})"
+  if [[ $1 == force || $current_perms != "${USER_ID}:${GROUP_ID}" ]]; then
+    echo 'Repairing permissions, this could take a while...' >&2
+    find "${YUMSYNC_DATA}" \
+      \( -not -user "${USER_ID}" -o -not -group "${GROUP_ID}" \) -print0 |\
+      xargs -0rI {} chown -h "${USER_ID}":"${GROUP_ID}" {}
+  fi
 }
 
 function sync {
@@ -106,9 +112,10 @@ function usage {
 Usage: ${script_name} [MODE]
 
 Modes (choose one):
-    sync      default, sync yum repos from repos.yml
-    archive   perform archive of yum repos to tar file
-    restore   restore archive from tar file
+    sync     default, sync yum repos from repos.yml
+    repair   scan data directory and fix permissions
+    archive  perform archive of yum repos to tar file
+    restore  restore archive from tar file
 
 Sync:
 
@@ -117,6 +124,15 @@ sync will be assumed. Restoring requires that
 a $config_file file exists. Please be sure to
 mount this file when starting your docker
 container.
+
+Repair:
+
+If the permissions of $YUMSYNC_DATA and its contents
+are suspected to be incorrect, this mode will scan
+and repair any errors. Permissions will automatically
+be repaired with the 'sync' mode if $YUMSYNC_DATA has
+the incorrect permissions. However, it will not consider
+its contents. This is for performance reasons.
 
 Archive:
 
@@ -141,14 +157,23 @@ EOF
 
 if [[ $1 ]]; then
   case $1 in
-    archive|restore|sync) mode="${1}"
+  archive|restore|sync|repair)
+    mode="${1}"
     shift
     ;;
-    help) usage ;;
+  help)
+    usage
+    ;;
   esac
 fi
 
 : ${mode:='sync'}
 
-setup
-$mode "$@"
+setup # prep work before anything
+
+if [[ $mode == repair ]]; then
+  repair force
+else
+  repair
+  $mode "$@"
+fi
