@@ -1,5 +1,5 @@
+.dockerignore
 .git
 .gitignore
 Dockerfile
 docker-compose.yml
-fixtures

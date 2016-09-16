@@ -3,6 +3,15 @@ Docker Yumsync CHANGELOG
 
 The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
 
+v0.5.0 (2016-09-15)
+-------------------
+
+* Bumped Yumsync to version v0.4.0
+
+| Yumsync |
+| :-----: |
+| [v0.4.0](https://github.com/jrwesolo/yumsync/tree/v0.4.0) |
+
 v0.4.1 (2016-09-12)
 -------------------
 
@@ -10,6 +19,10 @@ v0.4.1 (2016-09-12)
 * Split permissions fix into its own function and expose as mode
 * Pin CentOS base image to centos:7.2.1511
 * Bump gosu version to v1.9
+
+| Yumsync |
+| :-----: |
+| [v0.3.0](https://github.com/jrwesolo/yumsync/tree/v0.3.0) |
 
 v0.4.0 (2016-01-29)
 -------------------
