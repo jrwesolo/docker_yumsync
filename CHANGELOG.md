@@ -3,10 +3,23 @@ Docker Yumsync CHANGELOG
 
 The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
 
+v1.1.0 (2017-02-08)
+-------------------
+
+* Bump Yumsync to version v1.1.0
+* Bump Gosu dependency to 1.10
+* Change base image to `centos:7.3.1611`
+* Set `WORKDIR` to data directory
+
+
+| Yumsync |
+| :-----: |
+| [v1.1.0](https://github.com/jrwesolo/yumsync/tree/v1.1.0) |
+
 v1.0.0 (2016-09-28)
 -------------------
 
-* Bumped Yumsync to version v1.0.0
+* Bump Yumsync to version v1.0.0
 
 | Yumsync |
 | :-----: |
@@ -15,7 +28,7 @@ v1.0.0 (2016-09-28)
 v0.5.0 (2016-09-15)
 -------------------
 
-* Bumped Yumsync to version v0.4.0
+* Bump Yumsync to version v0.4.0
 
 | Yumsync |
 | :-----: |
@@ -36,7 +49,7 @@ v0.4.1 (2016-09-12)
 v0.4.0 (2016-01-29)
 -------------------
 
-* Bumped Yumsync to version v0.3.0
+* Bump Yumsync to version v0.3.0
 
 | Yumsync |
 | :-----: |
@@ -45,7 +58,7 @@ v0.4.0 (2016-01-29)
 v0.3.1 (2016-01-28)
 -------------------
 
-* Bumped Yumsync to version v0.2.1
+* Bump Yumsync to version v0.2.1
 
 | Yumsync |
 | :-----: |
@@ -54,7 +67,7 @@ v0.3.1 (2016-01-28)
 v0.3.0 (2016-01-28)
 -------------------
 
-* Bumped Yumsync to version v0.2.0
+* Bump Yumsync to version v0.2.0
 
 | Yumsync |
 | :-----: |
@@ -63,7 +76,7 @@ v0.3.0 (2016-01-28)
 v0.2.2 (2016-01-27)
 -------------------
 
-* Bumped Yumsync to version v0.1.4
+* Bump Yumsync to version v0.1.4
 
 | Yumsync |
 | :-----: |
@@ -74,7 +87,7 @@ v0.2.1 (2016-01-26)
 
 ### Bugfix
 
-* Bumped Yumsync to version v0.1.3, this fixes a syncing error cause by incorrect parameters being passed from Yum to YumProgress. Refer to this [issue](https://github.com/ryanuber/pakrat/issues/3#issuecomment-175305140) for a detailed explanation.
+* Bump Yumsync to version v0.1.3, this fixes a syncing error cause by incorrect parameters being passed from Yum to YumProgress. Refer to this [issue](https://github.com/ryanuber/pakrat/issues/3#issuecomment-175305140) for a detailed explanation.
 
 | Yumsync |
 | :-----: |
@@ -89,7 +102,7 @@ v0.2.0 (2016-01-21)
 
 ### Bugfix
 
-* Bumped Yumsync to version v0.1.2, this fixes combined metadata generation
+* Bump Yumsync to version v0.1.2, this fixes combined metadata generation
 
 | Yumsync |
 | :-----: |
