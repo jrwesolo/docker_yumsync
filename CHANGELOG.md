@@ -1,7 +1,20 @@
 Docker Yumsync CHANGELOG
 ========================
 
-The version numbers of this docker image do not directly reflect the version number of Yumsync that is being used. Each image version below will indicate what version of Yumsync it is using.
+The version numbers of this docker image do not directly reflect the
+version number of Yumsync that is being used. Each image version below
+will indicate what version of Yumsync it is using.
+
+v1.1.1 (2017-04-13)
+-------------------
+
+* Bump Yumsync to version v1.1.1
+* Install pip from pypa.io
+* Build wheel and install with pip
+
+| Yumsync |
+| :-----: |
+| [v1.1.1](https://github.com/jrwesolo/yumsync/tree/v1.1.1) |
 
 v1.1.0 (2017-02-08)
 -------------------
@@ -10,7 +23,6 @@ v1.1.0 (2017-02-08)
 * Bump Gosu dependency to 1.10
 * Change base image to `centos:7.3.1611`
 * Set `WORKDIR` to data directory
-
 
 | Yumsync |
 | :-----: |

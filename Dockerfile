@@ -12,20 +12,21 @@ RUN curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/do
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
-# EPEL required for python-pip
+# createrepo used for repo generation
+# pv used for yumsync backup and restore
 RUN yum install -y epel-release \
-    && yum install -y createrepo python-pip PyYAML \
+    && yum install -y createrepo pv \
     && yum clean all
 
-# used for yumsync backup and restore
-RUN yum install -y pv \
-    && yum clean all
+# pip installation
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python
 
-ENV YUMSYNC_VERSION="1.1.0"
+ENV YUMSYNC_VERSION="1.1.1"
 RUN curl -sSL "https://github.com/jrwesolo/yumsync/archive/v${YUMSYNC_VERSION}.tar.gz" | \
     tar -C /usr/local/src -xz \
     && cd "/usr/local/src/yumsync-${YUMSYNC_VERSION}" \
-    && python setup.py install \
+    && python setup.py bdist_wheel \
+    && pip install dist/yumsync-*.whl \
     && rm -rf "/usr/local/src/yumsync-${YUMSYNC_VERSION}"
 
 ENV YUMSYNC_CONF=/etc/yumsync \
