@@ -21,7 +21,7 @@ RUN yum install -y epel-release \
 # pip installation
 RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python
 
-ENV YUMSYNC_VERSION="1.2.0"
+ENV YUMSYNC_VERSION="1.3.0"
 RUN curl -sSL "https://github.com/jrwesolo/yumsync/archive/v${YUMSYNC_VERSION}.tar.gz" | \
     tar -C /usr/local/src -xz \
     && cd "/usr/local/src/yumsync-${YUMSYNC_VERSION}" \

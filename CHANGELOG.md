@@ -5,6 +5,15 @@ The version numbers of this docker image do not directly reflect the
 version number of Yumsync that is being used. Each image version below
 will indicate what version of Yumsync it is using.
 
+v1.3.0 (2017-05-10)
+-------------------
+
+* Bump Yumsync to version v1.3.0
+
+| Yumsync |
+| :-----: |
+| [v1.3.0](https://github.com/jrwesolo/yumsync/tree/v1.3.0) |
+
 v1.2.0 (2017-04-25)
 -------------------
 
