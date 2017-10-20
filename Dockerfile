@@ -12,6 +12,12 @@ RUN curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/do
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
+# install Tini
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
 # createrepo used for repo generation
 # pv used for yumsync backup and restore
 RUN yum install -y epel-release \
@@ -44,5 +50,4 @@ COPY docker /docker
 
 VOLUME $YUMSYNC_DATA
 WORKDIR $YUMSYNC_DATA
-ENTRYPOINT ["/docker/run"]
-CMD []
+CMD ["/docker/run"]
